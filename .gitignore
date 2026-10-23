@@ -1,0 +1,5 @@
+# بيانات شخصية لا تُرفع أبداً
+*.json
+!manifest.webmanifest
+.dev/
+.DS_Store

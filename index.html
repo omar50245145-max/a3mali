@@ -118,6 +118,28 @@ svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.8;str
 .sec.eve i{background:var(--sky-ink)}
 .sec button.s{border:0;background:transparent;padding:4px 0;min-height:36px}
 
+/* جدول اليوم في أول الصفحة */
+.sched{background:var(--surface);border-radius:var(--radius-card);box-shadow:var(--lift);padding:14px 14px 4px;display:flex;flex-direction:column;gap:8px;scroll-margin-top:10px}
+.shd{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.shd .tt b{display:block;font-size:20px;font-weight:700;color:var(--brown-ink);line-height:1.35}
+.shd .tt span{font-size:12.5px;color:var(--muted)}
+.shd .cnt{flex:0 0 auto;font-size:12.5px;font-weight:600;color:var(--brown-ink);background:var(--brown-pale);border-radius:999px;padding:3px 11px;white-space:nowrap}
+.sched .bar{background:var(--brown-pale);height:6px}
+.sched .bar i{background:var(--brown)}
+.sl .it .tm b{font-size:14px;font-weight:700}
+.sched .sl .it:last-child{border-bottom:0}
+.nowl{display:flex;align-items:center;gap:6px;height:24px;color:var(--amber);font-size:11.5px;font-weight:700}
+.nowl::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--amber);flex:0 0 auto}
+.nowl::after{content:"";flex:1;height:2px;border-radius:2px;background:var(--amber);opacity:.7}
+.sdiv{font-size:12px;font-weight:700;color:var(--muted);padding:10px 0 2px;border-bottom:1px dashed var(--rule)}
+.sdiv.eve{color:var(--sky-ink)}
+.tag.rtn{background:var(--sage);color:var(--sage-ink)}
+.empty.in{box-shadow:none;background:transparent;padding:6px 0 12px}
+.quad.sm{grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.quad.sm .q{min-height:48px;border-radius:14px;padding:5px 3px;gap:0}
+.quad.sm .q b{font-size:16px;line-height:1.2}
+.quad.sm .q span{font-size:11px;line-height:1.3;white-space:nowrap}
+
 /* مربعات الأولوية */
 .quad{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .q{border:0;border-radius:18px;padding:10px 8px;display:flex;flex-direction:column;align-items:center;gap:1px;min-height:84px;justify-content:center}
@@ -450,7 +472,7 @@ input.title{font-size:18px;font-weight:500}
    - التنبيه في تقويم الآيفون عبر اختصار «a3mali-taqweem» بدل «تذكيرات».
    - «فوائدي» (2026-10-24b): فوائد وأفكار ويوميات، كتابةً أو صوتاً أو صورةً أو نصاً من صورة (بالنص المباشر في الآيفون).
    وبقي من الإصدار الثاني: بعد الدوام، وآخر موعد، والخطوات، ونقاط الاجتماع، ومراجعة الأسبوع، وأبرز الإنجازات، والبحث. */
-var APPV='2026-10-24b';
+var APPV='2026-10-26a';
 var DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 var DSHORT=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
 var MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -575,10 +597,10 @@ function itemRow(it,s){
   var dn=isDone(it,s),meet=it.type==='meet',hasAch=hasAchFor(it,s),st=it.steps||[],sd=st.filter(function(x){return x.d;}).length,pt=(it.points||[]).filter(function(x){return !x.d;}).length;
   var m=(meet?'<span class="tag meet">'+IC.meet+'اجتماع</span>':'')+(it.pri==='ui'&&!meet?'<span class="tag pri">مهم وعاجل</span>':'')+dueTag(it)+
     (st.length?'<span class="tag">'+IC.list+'<span class="num">'+sd+'/'+st.length+'</span></span>':'')+(pt?'<span class="tag meet">'+plural(pt,'نقطة','نقطتان','نقاط','نقطة')+'</span>':'')+
-    (it.rep&&it.type!=='habit'?'<span class="tag">'+IC.rep+'أسبوعي</span>':'')+(it.cal?'<span class="tag cal">'+IC.bell+'في التقويم</span>':'')+(hasAch?'<span class="tag star">'+IC.star+'إنجاز</span>':'');
+    (it.type==='habit'?'<span class="tag rtn">'+IC.rep+'روتيني'+(hStreak(it)?' · 🔥 <span class="num">'+hStreak(it)+'</span>':'')+'</span>':'')+(it.rep&&it.type!=='habit'?'<span class="tag">'+IC.rep+'أسبوعي</span>':'')+(it.cal?'<span class="tag cal">'+IC.bell+'في التقويم</span>':'')+(hasAch?'<span class="tag star">'+IC.star+'إنجاز</span>':'');
   return '<div class="it'+(meet?' meet':'')+(dn?' done':'')+'" id="r-'+it.id+'-'+s+'">'+tmCell(it.time)+
     '<button class="body" data-act="edit" data-id="'+it.id+'" data-day="'+s+'"><span class="t"><span class="hl '+priCls(it)+'">'+esc(it.title)+'</span></span>'+(m?'<span class="m">'+m+'</span>':'')+'</button>'+
-    (dn&&!hasAch?'<button class="go" data-act="toach" data-id="'+it.id+'" data-day="'+s+'" aria-label="أضفه إلى إنجازاتي">'+IC.star+'</button>':'')+
+    (dn&&!hasAch&&it.type!=='habit'?'<button class="go" data-act="toach" data-id="'+it.id+'" data-day="'+s+'" aria-label="أضفه إلى إنجازاتي">'+IC.star+'</button>':'')+
     '<button class="ck" data-act="done" data-id="'+it.id+'" data-day="'+s+'" aria-label="'+(dn?'إلغاء الإنجاز':'أنجزت')+' '+esc(it.title)+'" aria-pressed="'+dn+'">'+(dn?IC.check:'')+'</button></div>';
 }
 function listOf(arr,s){var open=arr.filter(function(x){return !isDone(x,s);}),dn=arr.filter(function(x){return isDone(x,s);});return '<div class="list">'+open.concat(dn).map(function(it){return itemRow(it,s);}).join('')+'</div>';}
@@ -602,13 +624,29 @@ function vToday(){
   if(!UI.day&&dow(t)>=5)ws=addDays(ws,7);
   for(var i=0;i<5;i++){var d=addDays(ws,i),has=dayItems(d).some(function(x){return !isDone(x,d);});
     strip+='<button class="d'+(d===t?' today':'')+'" data-act="day" data-d="'+d+'" aria-pressed="'+(d===s)+'"><span>'+DSHORT[i]+'</span><b class="num">'+pd(d).getDate()+'</b><i class="'+(has?'on':'')+'"></i></button>';}
-  var l=dayItems(s),dn=l.filter(function(x){return isDone(x,s);}).length,left=l.length-dn,hs=allStreak(),hb=habits().length;
+  /* الأعمال والروتين معاً: جدول اليوم يجمعهما مرتبين بالساعة */
+  var l=dayItems(s),hl=habitsOn(s),all=l.concat(hl),dn=all.filter(function(x){return isDone(x,s);}).length,left=all.length-dn,hs=allStreak(),hb=habits().length;
   var h='<div class="hello"><div><h1>'+greet()+(name?'، '+esc(name):'')+' 👋</h1><div class="d">'+fd(s)+' · '+hijri(s)+'</div></div><button class="av" data-act="tab" data-id="more" aria-label="المزيد وبياناتي">'+initial()+'</button></div>';
-  h+='<div class="brown"><div class="row"><div><div class="lb">'+(s===t?'مساحتك لليوم':'مساحة '+DAYS[dow(s)])+'</div><div class="big">'+(!l.length?(s===t?'يومك فارغ — ابدأ بخطوة':'لا شيء في هذا اليوم'):left?'باقي '+plural(left,'عمل واحد','عملان','أعمال','عملاً')+' لتكمل يومك':'أتممت أعمال يومك')+'</div></div>'+(l.length?'<span class="pill">'+(left?'<span class="num">'+left+'</span> متبقية':'مكتمل')+'</span>':'')+'</div>'+
-    barHtml('d'+s,l.length?dn/l.length:0)+
-    '<div class="stats"><div><b class="num">'+dn+'/'+l.length+'</b><span>مكتمل '+(s===t?'اليوم':'في اليوم')+'</span></div><hr><div>'+(hb?'<b>🔥 <span class="num">'+hs+'</span></b><span>'+(hs===1?'يوم':'أيام')+' في روتينك</span>':'<b class="num">'+achIn([weekStart(t),addDays(weekStart(t),6)]).length+'</b><span>إنجازات الأسبوع</span>')+'</div></div></div>';
   h+='<div class="days"><button class="w" data-act="wk" data-d="-7" aria-label="الأسبوع السابق">›</button>'+strip+'<button class="w" data-act="wk" data-d="7" aria-label="الأسبوع التالي">‹</button></div>';
   if(!standalone()&&/iPhone|iPad/.test(navigator.userAgent))h+='<div class="install"><b>أضف «أعمالي» إلى الشاشة الرئيسية أولاً</b><ol><li>زر المشاركة في سفاري (المربع والسهم).</li><li>«إضافة إلى الشاشة الرئيسية».</li><li>افتحه من الأيقونة دائماً.</li></ol><span class="small">ما تكتبه هنا في سفاري لا يظهر في الأيقونة — لكلٍّ منهما بياناته.</span></div>';
+  /* جدول اليوم أول الصفحة: الساعة يميناً، وخط «الآن» بين ما مضى وما بقي، وما بلا وقت في آخره */
+  var Q=quadOf(l,s),fl=UI.qf?Q[UI.qf]:null,rows=(fl||l.filter(function(x){return !x.eve;}).concat(hl)).slice().sort(byTime),eve=fl?[]:l.filter(function(x){return x.eve;});
+  h+='<section class="sched" id="sched"><div class="shd"><div class="tt"><b>'+(UI.qf?{ui:'مهم وعاجل',i:'مهم غير عاجل',done:'المنتهية',n:'عادي'}[UI.qf]:s===t?'جدول اليوم':'جدول '+DAYS[dow(s)])+'</b><span>'+fdShort(s)+(hl.length&&!UI.qf?' · المهام وروتيني':'')+'</span></div>'+
+    (UI.qf?'<button class="mini" data-act="qf" data-k="">عرض الكل</button>':all.length?'<span class="cnt">أنجزت <span class="num">'+dn+'</span> من <span class="num">'+all.length+'</span></span>':'')+'</div>'+
+    (all.length&&!UI.qf?barHtml('s'+s,dn/all.length):'');
+  if(!all.length)h+='<div class="empty in"><b>'+(s===t?'يومك فارغ':'لا شيء في هذا اليوم')+'</b><span class="small dim">اكتب ما عليك في سطر واحد، مثل «تسليم الأسئلة لرئيس القسم غداً الساعة 10».</span><button class="btn pri" data-act="add" data-d="'+s+'">'+IC.plus+' أضف مهمة</button></div>';
+  else if(!rows.length&&!eve.length)h+='<p class="small dim" style="padding:8px 2px">لا شيء هنا.</p>';
+  else{if(!UI.qf&&dn===all.length)h+='<div class="alldone"><span class="hand">بارك الله في وقتك</span><span class="small">أنجزت أعمال '+(s===t?'اليوم':'هذا اليوم')+' كلها.</span></div>';
+    var nw=s===t?nowHM():null,put=!nw,untimed=false;
+    h+='<div class="sl">'+rows.map(function(it){var p='';
+      if(!put&&it.time&&it.time>nw){put=true;p='<div class="nowl"><span>الآن '+fmtT(nw)+'</span></div>';}
+      if(!it.time&&!untimed){untimed=true;if(!put&&rows.some(function(x){return x.time;})){put=true;p+='<div class="nowl"><span>الآن '+fmtT(nw)+'</span></div>';}p+='<div class="sdiv">بلا وقت محدد</div>';}
+      return p+itemRow(it,s);}).join('')+'</div>';
+    if(eve.length)h+='<div class="sdiv eve">بعد الدوام · <span class="num">'+eve.length+'</span></div><div class="sl">'+eve.map(function(it){return itemRow(it,s);}).join('')+'</div>';}
+  h+='</section>';
+  /* مربعات الأولوية مصغّرة في صف واحد: لمسة المربع تصفّي الجدول أعلاه */
+  if(l.length)h+='<div class="quad sm" role="group" aria-label="الأولوية">'+
+      [['ui','r','مهم وعاجل'],['i','h','غير عاجل'],['n','g','عادي'],['done','s','منتهية']].map(function(o){return '<button class="q '+o[1]+'" data-act="qf" data-k="'+o[0]+'" aria-pressed="'+(UI.qf===o[0])+'"><b class="num">'+Q[o[0]].length+'</b><span>'+o[2]+'</span></button>';}).join('')+'</div>';
   var bd=backupDays();if(hasData()&&bd>=7)h+='<div class="bk'+(bd>=14?' red':'')+'"><span class="tx"><b>'+(D.lastBackup?'آخر نسخة احتياطية قبل <span class="num">'+bd+'</span> يوماً.':'لم تحفظ نسخة احتياطية بعد.')+'</b><br>بياناتك على هذا الهاتف فقط.</span><button data-act="backup">حفظ نسخة</button></div>';
   if(s===t){
     if(reviewDue()){var wd=weekDone(),w0=weekStart(t),wa=D.ach.filter(function(a){return a.date>=w0&&a.date<=t;}).length;
@@ -621,21 +659,13 @@ function vToday(){
       (od.length>4?'<span class="small dim">و<span class="num">'+(od.length-4)+'</span> غيرها — تظهر بعد ترتيب هذه.</span>':'')+'</div>';
     var nx=nextMeet();
     if(nx)h+='<div class="next"><button class="open" data-act="edit" data-id="'+nx.it.id+'" data-day="'+nx.day+'"><span class="ico">'+IC.meet+'</span><span class="tx"><span class="small dim">الاجتماع القادم</span><b>'+esc(nx.it.title)+'</b><span class="when">'+untilTxt(nx.day,nx.it.time)+'</span></span></button><button class="pt" data-act="point" data-id="'+nx.it.id+'">+ نقطة</button></div>';
-    h+='<button class="capture" data-act="capture"><span class="ico">'+IC.scan+'</span><span><b>التقاط مهامي</b><span class="new">جديد</span><p>الصق رسالة رئيس القسم أو نصاً من صورة، فيصير كل سطر مهمة بموعدها.</p></span></button>';
     var ds=dueSoon();
     if(ds.length)h+='<div class="sec"><i style="background:var(--amber)"></i>مواعيد تقترب</div>'+listOf(ds,t);
+    h+='<button class="capture" data-act="capture"><span class="ico">'+IC.scan+'</span><span><b>التقاط مهامي</b><span class="new">جديد</span><p>الصق رسالة رئيس القسم أو نصاً من صورة، فيصير كل سطر مهمة بموعدها.</p></span></button>';
   }
-  if(l.length){var Q=quadOf(l,s);
-    h+='<div class="sec"><i></i>الأولوية'+(UI.qf?'<button class="s" data-act="qf" data-k="">عرض الكل</button>':'')+'</div><div class="quad">'+
-      [['ui','r','مهم وعاجل'],['i','h','مهم غير عاجل'],['done','s','المنتهية'],['n','g','عادي']].map(function(o){return '<button class="q '+o[1]+'" data-act="qf" data-k="'+o[0]+'" aria-pressed="'+(UI.qf===o[0])+'"><i></i><b class="num">'+Q[o[0]].length+'</b><span>'+o[2]+'</span></button>';}).join('')+'</div>';
-    if(UI.qf)l=Q[UI.qf];}
-  var work=l.filter(function(x){return !x.eve;}),eve=l.filter(function(x){return x.eve;});
-  h+='<div class="sec"><i></i>'+(UI.qf?{ui:'مهم وعاجل',i:'مهم غير عاجل',done:'المنتهية',n:'عادي'}[UI.qf]:s===t?'جدول اليوم':'جدول '+DAYS[dow(s)])+'<span class="s">'+(dayItems(s).length&&!UI.qf?'أنجزت <span class="num">'+dn+'</span> من <span class="num">'+dayItems(s).length+'</span>':'')+'</span></div>';
-  if(!dayItems(s).length)h+='<div class="empty"><b>'+(s===t?'يومك فارغ':'لا شيء في هذا اليوم')+'</b><span class="small dim">اكتب ما عليك في سطر واحد، مثل «تسليم الأسئلة لرئيس القسم غداً الساعة 10».</span><button class="btn pri" data-act="add" data-d="'+s+'">'+IC.plus+' أضف مهمة</button></div>';
-  else if(!l.length)h+='<p class="small dim">لا شيء هنا.</p>';
-  else{if(!UI.qf&&dn===dayItems(s).length)h+='<div class="alldone"><span class="hand">بارك الله في وقتك</span><span class="small">أنجزت أعمال '+(s===t?'اليوم':'هذا اليوم')+' كلها.</span></div>';
-    if(work.length)h+=listOf(work,s);
-    if(eve.length)h+='<div class="sec eve"><i></i>بعد الدوام<span class="s"><span class="num">'+eve.length+'</span></span></div>'+listOf(eve,s);}
+  /* البطاقة البنية صارت ملخصاً أسفل الجدول */
+  h+='<div class="brown"><div class="row"><div><div class="lb">'+(s===t?'مساحتك لليوم':'مساحة '+DAYS[dow(s)])+'</div><div class="big">'+(!all.length?(s===t?'يومك فارغ — ابدأ بخطوة':'لا شيء في هذا اليوم'):left?'باقي '+plural(left,'عمل واحد','عملان','أعمال','عملاً')+' لتكمل يومك':'أتممت أعمال يومك')+'</div></div>'+(all.length?'<span class="pill">'+(left?'<span class="num">'+left+'</span> متبقية':'مكتمل')+'</span>':'')+'</div>'+
+    '<div class="stats"><div><b class="num">'+dn+'/'+all.length+'</b><span>مكتمل '+(s===t?'اليوم':'في اليوم')+'</span></div><hr><div>'+(hb?'<b>🔥 <span class="num">'+hs+'</span></b><span>'+(hs===1?'يوم':'أيام')+' في روتينك</span>':'<b class="num">'+achIn([weekStart(t),addDays(weekStart(t),6)]).length+'</b><span>إنجازات الأسبوع</span>')+'</div></div></div>';
   /* شريط الإنجازات */
   var w0b=weekStart(t),wk=achIn([w0b,addDays(w0b,6)]).length,tr=achIn(termRange(curTerm())).length;
   h+='<button class="ribbon" data-act="tab" data-id="ach"><span class="star">'+IC.star+'</span><span style="flex:1"><span class="small dim">إنجازاتك هذا الأسبوع</span><br><b class="num">'+wk+'</b> <span class="small dim">· في هذا الفصل <span class="num">'+tr+'</span></span></span><span class="dim">←</span></button>';
@@ -898,7 +928,13 @@ function calText(it){var a=alertAt(it);if(!a)return null;var s;
   if(it.time){var p=it.time.split(':');s=pd(nextOcc(it));s.setHours(+p[0],+p[1],0,0);}else s=new Date(a);
   var e=new Date(s.getTime()+(it.type==='meet'?60:it.time?30:15)*60000);
   return isoL(s)+'\n'+isoL(e)+'\n'+isoL(a)+'\n'+String(it.title).replace(/\n/g,' ');}
-function calRun(text){location.href='shortcuts://run-shortcut?name='+encodeURIComponent(SC_NAME)+'&input=text&text='+encodeURIComponent(text);}
+function calUrl(text){return 'shortcuts://run-shortcut?name='+encodeURIComponent(SC_NAME)+'&input=text&text='+encodeURIComponent(text);}
+/* الآيفون لا يفتح «الاختصارات» برمجياً من البرنامج المضاف إلى الشاشة الرئيسية، فيُعرض رابط حقيقي يلمسه المعلم بنفسه */
+function calSend(id,text,title,when){layer('<div class="row"><h2>نبّهني في تقويم الآيفون</h2><button class="btn plain" data-act="closel">لاحقاً</button></div>'+
+  '<p><b>'+esc(title)+'</b><br><span class="small dim">يرنّ '+when+'</span></p>'+
+  '<a class="btn pri" href="'+calUrl(text)+'" data-act="calsent" data-id="'+(id||'')+'" data-when="'+esc(when)+'">'+IC.bell+' أضف التنبيه إلى التقويم</a>'+
+  '<p class="small dim">يُفتح تطبيق «الاختصارات» لحظةً ويضيف الموعد بمنبّه، ثم ارجع إلى «أعمالي». أول مرة يسألك الآيفون عن الوصول إلى «التقويم»: اختر «السماح دائماً».</p>'+
+  '<button class="btn plain" data-act="calsetup">لم يُفتح شيء أو قال إن الاختصار غير موجود؟ ثبّته من جديد</button>');}
 function calKey(it){return (nextOcc(it)||'')+' '+(it.time||'')+' '+(D.remind.lead||0);}
 function icsEsc(s){return String(s).replace(/\\/g,'\\\\').replace(/;/g,'\\;').replace(/,/g,'\\,').replace(/\n/g,'\\n');}
 function icsDT(d,t){return d.replace(/-/g,'')+(t?'T'+t.replace(':','')+'00':'');}
@@ -918,7 +954,7 @@ function calSetup(it){layer('<div class="row"><h2>التنبيه في تقويم
 function remind(it){
   var w=alertAt(it);if(!w){refuse('حدّد موعداً أو آخر موعد أولاً');return false;}
   if(w<new Date()){refuse('وقت التنبيه مضى — اختر موعداً قادماً');return false;}
-  if(D.remind.method==='cal'){if(!D.remind.calOk){calSetup(it);return false;}calRun(calText(it));it.cal=calKey(it);save();toast('أُرسل إلى تقويم الآيفون: '+relDay(ymd(w))+' '+fmtT(pad2(w.getHours())+':'+pad2(w.getMinutes())));return true;}
+  if(D.remind.method==='cal'){if(!D.remind.calOk){calSetup(it);return false;}calSend(it.id,calText(it),it.title,relDay(ymd(w))+' '+fmtT(pad2(w.getHours())+':'+pad2(w.getMinutes())));return false;}
   shareFile((it.title.slice(0,30).replace(/[\/\\:*?"<>|]+/g,'-')||'موعد')+'.ics',icsFor(it),'text/calendar').then(function(ok){if(ok){it.cal=calKey(it);save();toast('اختر «إضافة» في التقويم ليرنّ في وقته');}});return true;
 }
 
@@ -1249,7 +1285,7 @@ function onClick(ev){
   if(a==='tab'){UI.tab=b.dataset.id;UI.cat=null;UI.qf='';if(UI.tab==='today')UI.day=null;closeLayer();render();return false;}
   if(a==='day'){UI.day=b.dataset.d===today()?null:b.dataset.d;UI.qf='';render(true);return false;}
   /* مربعات الأولوية، وتقويم «مهامي» وتبويباته */
-  if(a==='qf'){UI.qf=UI.qf===b.dataset.k?'':b.dataset.k;render(true);return false;}
+  if(a==='qf'){UI.qf=UI.qf===b.dataset.k?'':b.dataset.k;render(true);var sc=document.getElementById('sched');if(sc&&UI.qf)sc.scrollIntoView({block:'start',behavior:'smooth'});return false;}
   if(a==='calsel'){UI.sel=b.dataset.d;UI.tseg='day';render(true);return false;}
   if(a==='calnav'){UI.cal=addMonth(UI.cal||(UI.sel||today()).slice(0,7),Number(b.dataset.n));render(true);return false;}
   if(a==='tseg'){UI.tseg=b.dataset.k;render(true);return false;}
@@ -1280,7 +1316,10 @@ function onClick(ev){
   if(a==='remind'){var ir=item(b.dataset.id);if(ir)remind(ir);return false;}
   if(a==='calgo'){D.remind.calOk=true;closeLayer();var ig=item(b.dataset.id);if(ig)remind(ig);render(true);return true;}
   if(a==='caltest'){D.remind.calOk=true;var w0=new Date(Date.now()+3*60000),w1=new Date(w0.getTime()+15*60000),wa=new Date(Date.now()+2*60000);
-    calRun(isoL(w0)+'\n'+isoL(w1)+'\n'+isoL(wa)+'\nتجربة من «أعمالي» — التنبيه يعمل');toast('أُرسلت تجربة: يرنّ الآيفون بعد دقيقتين، ثم احذف الموعد من التقويم');render(true);return true;}
+    calSend('',isoL(w0)+'\n'+isoL(w1)+'\n'+isoL(wa)+'\nتجربة من «أعمالي» — التنبيه يعمل','تجربة من «أعمالي»','بعد دقيقتين تقريباً، ثم احذف الموعد من التقويم');return true;}
+  /* لمس رابط الإرسال: يُترك الرابط يعمل، ويُغلق اللوح بعده (إغلاقه فوراً يلغي فتح الرابط) */
+  if(a==='calsent'){var ic=item(b.dataset.id);if(ic)ic.cal=calKey(ic);var wt=b.dataset.when;setTimeout(function(){closeLayer();render(true);toast(ic?'أُرسل إلى تقويم الآيفون: '+wt:'أُرسلت التجربة: انتظر التنبيه');},400);return true;}
+  if(a==='calsetup'){var cs=document.querySelector('#layer [data-act=calsent]'),ci=cs&&item(cs.dataset.id);calSetup(ci);return false;}
   /* مراجعة الأسبوع */
   if(a==='rvskip'){D.rvSkip.push(b.dataset.k);render(true);return true;}
   if(a==='reviewed'){D.review=weekStart(today());D.rvSkip=[];render(true);toast('تمت مراجعة الأسبوع');return true;}

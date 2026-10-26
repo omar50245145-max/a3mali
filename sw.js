@@ -1,6 +1,6 @@
 /* أعمالي — عامل الخدمة: يحفظ ملفات البرنامج ليعمل دون إنترنت.
    غيّر رقم الإصدار V مع كل تحديث للبرنامج حتى يصل التحديث. */
-var V='a3mali-2026-10-26a';
+var V='a3mali-2026-10-26b';
 var FILES=['./','index.html','manifest.webmanifest','fonts/fonts.css','fonts/readex-arabic.woff2','fonts/readex-latin.woff2','fonts/ruqaa-arabic.woff2','icons/apple-touch-icon.png','icons/icon-192.png','icons/icon-512.png'];
 self.addEventListener('install',function(e){
   e.waitUntil(caches.open(V).then(function(c){return c.addAll(FILES);}).then(function(){return self.skipWaiting();}));

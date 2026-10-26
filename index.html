@@ -472,7 +472,7 @@ input.title{font-size:18px;font-weight:500}
    - التنبيه في تقويم الآيفون عبر اختصار «a3mali-taqweem» بدل «تذكيرات».
    - «فوائدي» (2026-10-24b): فوائد وأفكار ويوميات، كتابةً أو صوتاً أو صورةً أو نصاً من صورة (بالنص المباشر في الآيفون).
    وبقي من الإصدار الثاني: بعد الدوام، وآخر موعد، والخطوات، ونقاط الاجتماع، ومراجعة الأسبوع، وأبرز الإنجازات، والبحث. */
-var APPV='2026-10-26a';
+var APPV='2026-10-26b';
 var DAYS=['الأحد','الإثنين','الثلاثاء','الأربعاء','الخميس','الجمعة','السبت'];
 var DSHORT=['أحد','إثنين','ثلاثاء','أربعاء','خميس','جمعة','سبت'];
 var MONTHS=['يناير','فبراير','مارس','أبريل','مايو','يونيو','يوليو','أغسطس','سبتمبر','أكتوبر','نوفمبر','ديسمبر'];
@@ -574,6 +574,9 @@ function nextMeet(){var t=today(),n=nowHM();for(var i=0;i<14;i++){var s=addDays(
 function untilTxt(s,t){if(s!==today())return relDay(s)+(t?' · '+fmtT(t):'');if(!t)return 'اليوم';var p=t.split(':'),now=new Date(),m=(+p[0]*60+ +p[1])-(now.getHours()*60+now.getMinutes());
   if(m<=0)return 'الآن';if(m<60)return 'بعد '+m+' دقيقة';var h=Math.floor(m/60),r=m%60;return 'بعد '+(h===1?'ساعة':h===2?'ساعتين':h+' ساعات')+(r>=10?' و'+r+' دقيقة':'')+' · '+fmtT(t);}
 function achIn(r){return D.ach.filter(function(a){return a.date>=r[0]&&a.date<=r[1];});}
+/* على الآيفون لا يضيف «ملف تقويم» شيئاً: قائمة المشاركة لا تعرض «التقويم»، فيُستعمل الاختصار دائماً */
+function isIOS(){return /iPhone|iPad|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);}
+function rmMethod(){return isIOS()?'cal':D.remind.method;}
 function standalone(){return (window.matchMedia&&matchMedia('(display-mode: standalone)').matches)||navigator.standalone===true;}
 function backupDays(){var b=D.lastBackup||D.created||Date.now();return Math.floor((Date.now()-b)/864e5);}
 function hasData(){return D.items.length+D.ach.length>0;}
@@ -769,8 +772,8 @@ function vMore(){
   var p=D.profile,rm=D.remind,bd=backupDays();
   return '<div class="hd"><div class="row" style="gap:10px">'+MARK+'<h1>المزيد</h1></div><span class="small dim">الإصدار <span class="num">'+APPV+'</span></span></div>'+
   '<div class="card"><b>التنبيه في تقويم الآيفون</b>'+
-    '<div class="seg"><button data-act="rmeth" data-m="cal" aria-pressed="'+(rm.method==='cal')+'">عبر الاختصار</button><button data-act="rmeth" data-m="ics" aria-pressed="'+(rm.method==='ics')+'">ملف تقويم</button></div>'+
-    (rm.method==='cal'?'<p class="small dim">يرسل «أعمالي» الموعد إلى اختصار «'+SC_NAME+'»، فيضيفه إلى تطبيق «التقويم» بمنبّه، ويرنّ الآيفون في وقته ولو كان «أعمالي» مغلقاً. ثبّت الاختصار مرة واحدة:</p>'+
+    (isIOS()?'':'<div class="seg"><button data-act="rmeth" data-m="cal" aria-pressed="'+(rm.method==='cal')+'">عبر الاختصار</button><button data-act="rmeth" data-m="ics" aria-pressed="'+(rm.method==='ics')+'">ملف تقويم</button></div>')+
+    (rmMethod()==='cal'?'<p class="small dim">يرسل «أعمالي» الموعد إلى اختصار «'+SC_NAME+'»، فيضيفه إلى تطبيق «التقويم» بمنبّه، ويرنّ الآيفون في وقته ولو كان «أعمالي» مغلقاً. ثبّت الاختصار مرة واحدة:</p>'+
       '<a class="btn soft" href="'+SC_NAME+'.shortcut" target="_blank" rel="noopener">'+IC.bell+' تثبيت اختصار «'+SC_NAME+'»</a>'+calSteps()+
       '<button class="btn" data-act="caltest">تجربة: موعد بعد ٣ دقائق</button>'+(rm.calOk?'<span class="small" style="color:var(--positive)">الاختصار مثبّت.</span>':'')
       :'<p class="small dim">يصنع ملف موعد بمنبّه وتختار «إضافة» في التقويم. قد لا يعمل من داخل البرنامج المضاف إلى الشاشة الرئيسية؛ الأضمن الاختصار.</p>')+
@@ -954,7 +957,7 @@ function calSetup(it){layer('<div class="row"><h2>التنبيه في تقويم
 function remind(it){
   var w=alertAt(it);if(!w){refuse('حدّد موعداً أو آخر موعد أولاً');return false;}
   if(w<new Date()){refuse('وقت التنبيه مضى — اختر موعداً قادماً');return false;}
-  if(D.remind.method==='cal'){if(!D.remind.calOk){calSetup(it);return false;}calSend(it.id,calText(it),it.title,relDay(ymd(w))+' '+fmtT(pad2(w.getHours())+':'+pad2(w.getMinutes())));return false;}
+  if(rmMethod()==='cal'){if(!D.remind.calOk){calSetup(it);return false;}calSend(it.id,calText(it),it.title,relDay(ymd(w))+' '+fmtT(pad2(w.getHours())+':'+pad2(w.getMinutes())));return false;}
   shareFile((it.title.slice(0,30).replace(/[\/\\:*?"<>|]+/g,'-')||'موعد')+'.ics',icsFor(it),'text/calendar').then(function(ok){if(ok){it.cal=calKey(it);save();toast('اختر «إضافة» في التقويم ليرنّ في وقته');}});return true;
 }
 
